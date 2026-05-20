@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Inform pdfjs to use the worker from the CDN to avoid Vite bundling issues
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+// We import the worker using Vite's ?url syntax to ensure it's served from the same origin.
+// This prevents CORS issues with fetching extra image decoders (like JBIG2 or JPX) that are often used in image-only PDFs.
+import workerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 interface PdfSlideshowProps {
   file: File;
@@ -78,19 +81,33 @@ export function PdfSlideshow({ file, currentPage, onLoadSuccess }: PdfSlideshowP
         const scaleY = containerHeight / unscaledViewport.height;
         const scale = Math.min(scaleX, scaleY);
         
-        // We can increase pixel density for sharper font rendering
-        const pixelRatio = window.devicePixelRatio || 1;
+        // We can increase pixel density for sharper font rendering, but must cap to avoid memory crashes with massive scanned PDFs.
+        const maxPixelRatio = 2;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
         const viewport = page.getViewport({ scale: scale * pixelRatio });
 
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        // Absolute safety clamp for massive PDFs
+        const MAX_DIM = 4096;
+        let finalWidth = viewport.width;
+        let finalHeight = viewport.height;
+        let cssWidth = viewport.width / pixelRatio;
+        let cssHeight = viewport.height / pixelRatio;
+
+        if (finalWidth > MAX_DIM || finalHeight > MAX_DIM) {
+           const downscale = Math.min(MAX_DIM / finalWidth, MAX_DIM / finalHeight);
+           finalWidth = finalWidth * downscale;
+           finalHeight = finalHeight * downscale;
+        }
+
+        canvas.width = finalWidth;
+        canvas.height = finalHeight;
         // Keep CSS dimension same as container scale
-        canvas.style.width = `${viewport.width / pixelRatio}px`;
-        canvas.style.height = `${viewport.height / pixelRatio}px`;
+        canvas.style.width = `${cssWidth}px`;
+        canvas.style.height = `${cssHeight}px`;
 
         const renderContext = {
           canvasContext: ctx,
-          viewport: viewport,
+          viewport: page.getViewport({ scale: (finalWidth / unscaledViewport.width) }),
         };
 
         renderTask = page.render(renderContext);
