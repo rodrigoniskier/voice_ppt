@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { UploadCloud, Mic, MicOff, Maximize, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { UploadCloud, Mic, MicOff, Maximize, FileText, ChevronLeft, ChevronRight, Hand } from 'lucide-react';
 import { useVoiceCommands, VoiceCommand } from './hooks/useVoiceCommands';
+import { useGestureCommands } from './hooks/useGestureCommands';
 import { PdfSlideshow } from './components/PdfSlideshow';
 import { cn } from './lib/utils';
 import { AnimatePresence, motion } from 'motion/react';
@@ -22,6 +23,10 @@ export default function App() {
   }, [numPages]);
 
   const { isListening, hasSupport, toggleListening, error: voiceError } = useVoiceCommands({
+    onCommand: handleCommand,
+  });
+
+  const { isCameraActive, hasGestureSupport, toggleGesture, gestureError, videoRef } = useGestureCommands({
     onCommand: handleCommand,
   });
 
@@ -178,6 +183,20 @@ export default function App() {
             />
           </div>
 
+          {/* Camera preview */}
+          <div className={cn(
+            "absolute top-6 right-6 w-32 h-24 bg-zinc-900 rounded-lg overflow-hidden border-2 border-zinc-800 shadow-xl z-40 transition-all duration-300",
+            isCameraActive ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"
+          )}>
+            <video 
+              ref={videoRef} 
+              autoPlay 
+              playsInline 
+              muted
+              className="w-full h-full object-cover -scale-x-100" 
+            />
+          </div>
+
           {/* Floating Controls Structure */}
           <AnimatePresence>
             <motion.div 
@@ -210,7 +229,7 @@ export default function App() {
               </div>
 
               {/* Voice Control */}
-              <div className="flex items-center px-2">
+              <div className="flex items-center space-x-2 px-2">
                 <button
                   onClick={toggleListening}
                   className={cn(
@@ -228,10 +247,26 @@ export default function App() {
                   ) : (
                     <>
                       <MicOff className="h-4 w-4" />
-                      <span>Voz Desligada</span>
+                      <span>Voz</span>
                     </>
                   )}
                 </button>
+
+                {/* Gesture Control */}
+                {hasGestureSupport && (
+                  <button
+                    onClick={toggleGesture}
+                    className={cn(
+                      "flex items-center justify-center space-x-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300",
+                      isCameraActive 
+                        ? "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                    )}
+                  >
+                    <Hand className="h-4 w-4" />
+                    <span>{isCameraActive ? 'Gestos Ativos' : 'Gestos'}</span>
+                  </button>
+                )}
               </div>
 
               {/* Fullscreen Toggle */}
@@ -248,16 +283,16 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Voice Error Toast */}
+          {/* Error Toast */}
           <AnimatePresence>
-            {voiceError && (
+            {(voiceError || gestureError) && (
               <motion.div
                 initial={{ opacity: 0, y: -20, x: '-50%' }}
                 animate={{ opacity: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0, y: -20, x: '-50%' }}
                 className="absolute top-6 left-1/2 z-50 bg-red-500 text-white text-sm px-4 py-2 rounded-full shadow-lg"
               >
-                {voiceError}
+                {voiceError || gestureError}
               </motion.div>
             )}
           </AnimatePresence>

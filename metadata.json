@@ -2,7 +2,8 @@
   "name": "Apresentador de Slides por Voz",
   "description": "Apresente slides em PDF e controle as páginas usando comandos de voz (ex: 'próximo', 'voltar').",
   "requestFramePermissions": [
-    "microphone"
+    "microphone",
+    "camera"
   ],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
