@@ -170,7 +170,7 @@ export default function App() {
           )}
 
           {/* Presentation Area */}
-          <div className="flex-1 relative overflow-hidden flex items-center justify-center p-4">
+          <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-black">
             <PdfSlideshow 
               file={file} 
               currentPage={currentPage}

@@ -18,6 +18,7 @@ export function PdfSlideshow({ file, currentPage, onLoadSuccess }: PdfSlideshowP
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resizeKey, setResizeKey] = useState(0);
 
   // Load the PDF once the file changes
   useEffect(() => {
@@ -70,7 +71,7 @@ export function PdfSlideshow({ file, currentPage, onLoadSuccess }: PdfSlideshowP
         if (!ctx) return;
 
         const container = containerRef.current;
-        const padding = 32; // Some padding
+        const padding = 0; // No padding, allow full extension
         const containerWidth = container.clientWidth - padding * 2;
         const containerHeight = container.clientHeight - padding * 2;
 
@@ -127,19 +128,26 @@ export function PdfSlideshow({ file, currentPage, onLoadSuccess }: PdfSlideshowP
         renderTask.cancel();
       }
     };
-  }, [pdf, currentPage]);
+  }, [pdf, currentPage, resizeKey]);
 
   // Handle Resize
   useEffect(() => {
-    const handleResize = () => {
-      // Force a re-render by slightly mutating the state when the window resizes,
-      // but to be clean, we'll just duplicate the render block. 
-      // A better way is to move the render logic to a useCallback, but for simplicity,
-      // we'll dispatch a custom event or use ResizeObserver.
-    };
+    if (!containerRef.current) return;
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    let timeoutId: NodeJS.Timeout;
+    const observer = new ResizeObserver(() => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setResizeKey((prev) => prev + 1);
+      }, 100); // Small debounce
+    });
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+    };
   }, []);
 
   if (error) {
@@ -153,11 +161,11 @@ export function PdfSlideshow({ file, currentPage, onLoadSuccess }: PdfSlideshowP
   return (
     <div 
       ref={containerRef} 
-      className="flex h-full w-full flex-col items-center justify-center bg-gray-900 overflow-hidden"
+      className="flex h-full w-full flex-col items-center justify-center bg-black overflow-hidden"
     >
       <canvas 
         ref={canvasRef} 
-        className="shadow-2xl rounded-sm transition-opacity duration-300"
+        className="shadow-2xl transition-opacity duration-300"
       />
     </div>
   );

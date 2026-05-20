@@ -28,7 +28,10 @@ export function useVoiceCommands({ onCommand }: UseVoiceCommandsProps) {
 
     recognition.lang = 'pt-BR';
     recognition.continuous = true;
-    recognition.interimResults = false;
+    recognition.interimResults = true; // Use interim results for faster response
+    recognition.maxAlternatives = 3;
+
+    let lastCommandTime = 0;
 
     recognition.onstart = () => {
       setIsListening(true);
@@ -37,15 +40,30 @@ export function useVoiceCommands({ onCommand }: UseVoiceCommandsProps) {
 
     recognition.onresult = (event: any) => {
       const current = event.resultIndex;
-      const transcript = event.results[current][0].transcript.toLowerCase();
+      const result = event.results[current];
+      
+      // Combine alternatives for higher sensitivity
+      let transcript = '';
+      for (let i = 0; i < result.length; i++) {
+        transcript += result[i].transcript.toLowerCase() + ' ';
+      }
+
       console.log('Voice recognized:', transcript);
 
-      const isNext = /(próximo|próxima|passar|avançar|frente)/i.test(transcript);
-      const isPrev = /(voltar|anterior|trás|atrás)/i.test(transcript);
+      const now = Date.now();
+      // 1.5 seconds cooldown to prevent rapid double-firing on interim updates
+      if (now - lastCommandTime < 1500) {
+        return;
+      }
+
+      const isNext = /(próximo|proximo|próxima|proxima|passar|avançar|frente|segue)/i.test(transcript);
+      const isPrev = /(voltar|anterior|trás|atrás|tras|atras)/i.test(transcript);
 
       if (isNext) {
+        lastCommandTime = now;
         onCommand('NEXT');
       } else if (isPrev) {
+        lastCommandTime = now;
         onCommand('PREV');
       }
     };
