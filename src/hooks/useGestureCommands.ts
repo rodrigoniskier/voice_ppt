@@ -10,6 +10,17 @@ interface UseGestureCommandsProps {
   onCommand: (command: GestureCommand) => void;
 }
 
+// How long to ignore further matches after a command fires.
+const COMMAND_COOLDOWN_MS = 1500;
+// Number of consecutive frames the same gesture must be recognized before it
+// is accepted as a command. A single misclassified frame is common (hand
+// mid-transition, motion blur) - requiring a short streak filters that noise
+// out while adding only ~2 frames (well under 100ms) of latency.
+const REQUIRED_CONSECUTIVE_FRAMES = 3;
+// Minimum classifier confidence for a canned gesture to be considered at
+// all; results below this are rejected by the recognizer itself.
+const GESTURE_SCORE_THRESHOLD = 0.6;
+
 export function useGestureCommands({ onCommand }: UseGestureCommandsProps) {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [hasGestureSupport, setHasGestureSupport] = useState(true);
@@ -19,29 +30,56 @@ export function useGestureCommands({ onCommand }: UseGestureCommandsProps) {
   const recognizerRef = useRef<GestureRecognizer | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lastCommandTimeRef = useRef<number>(0);
+  const pendingGestureRef = useRef<{ name: string; count: number }>({ name: '', count: 0 });
+
+  // Keep the latest callback in a ref so the prediction loop below doesn't
+  // need to be torn down and rebuilt whenever the parent passes a new
+  // onCommand identity.
+  const onCommandRef = useRef(onCommand);
+  useEffect(() => {
+    onCommandRef.current = onCommand;
+  }, [onCommand]);
 
   // Initialize Gesture Recognizer
   useEffect(() => {
     let active = true;
-    const initializeRecognizer = async () => {
-      try {
-        const vision = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-        );
-        if (!active) return;
-        const recognizer = await GestureRecognizer.createFromOptions(vision, {
+
+    const createRecognizer = (delegate: 'GPU' | 'CPU') =>
+      FilesetResolver.forVisionTasks(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+      ).then((vision) =>
+        GestureRecognizer.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath:
               'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',
-            delegate: 'GPU',
+            delegate,
           },
           runningMode: 'VIDEO',
-        });
+          numHands: 1,
+          minHandDetectionConfidence: 0.5,
+          minHandPresenceConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+          cannedGesturesClassifierOptions: {
+            scoreThreshold: GESTURE_SCORE_THRESHOLD,
+          },
+        })
+      );
+
+    const initializeRecognizer = async () => {
+      try {
+        const recognizer = await createRecognizer('GPU');
         if (!active) return;
         recognizerRef.current = recognizer;
       } catch (err: any) {
-        console.error('Error initializing Gesture Recognizer:', err);
-        if (active) setGestureError('Erro ao carregar modelo de gestos.');
+        console.error('Error initializing Gesture Recognizer on GPU, retrying on CPU:', err);
+        try {
+          const recognizer = await createRecognizer('CPU');
+          if (!active) return;
+          recognizerRef.current = recognizer;
+        } catch (cpuErr: any) {
+          console.error('Error initializing Gesture Recognizer:', cpuErr);
+          if (active) setGestureError('Erro ao carregar modelo de gestos.');
+        }
       }
     };
     initializeRecognizer();
@@ -62,17 +100,28 @@ export function useGestureCommands({ onCommand }: UseGestureCommandsProps) {
       try {
         const results = recognizerRef.current.recognizeForVideo(videoRef.current, nowInMs);
 
-        if (results.gestures.length > 0) {
-          const categoryName = results.gestures[0][0].categoryName;
+        const categoryName = results.gestures.length > 0 ? results.gestures[0][0].categoryName : '';
 
-          if (nowInMs - lastCommandTimeRef.current > 1500) {
-            if (categoryName === 'Open_Palm') {
-              lastCommandTimeRef.current = nowInMs;
-              onCommand('NEXT');
-            } else if (categoryName === 'Closed_Fist') {
-              lastCommandTimeRef.current = nowInMs;
-              onCommand('PREV');
-            }
+        // Require the same gesture on several consecutive frames before
+        // treating it as intentional input.
+        const pending = pendingGestureRef.current;
+        if (categoryName && categoryName === pending.name) {
+          pending.count += 1;
+        } else {
+          pending.name = categoryName;
+          pending.count = categoryName ? 1 : 0;
+        }
+
+        if (
+          pending.count >= REQUIRED_CONSECUTIVE_FRAMES &&
+          nowInMs - lastCommandTimeRef.current > COMMAND_COOLDOWN_MS
+        ) {
+          if (categoryName === 'Open_Palm') {
+            lastCommandTimeRef.current = nowInMs;
+            onCommandRef.current('NEXT');
+          } else if (categoryName === 'Closed_Fist') {
+            lastCommandTimeRef.current = nowInMs;
+            onCommandRef.current('PREV');
           }
         }
       } catch (e) {
@@ -83,7 +132,7 @@ export function useGestureCommands({ onCommand }: UseGestureCommandsProps) {
     if (isCameraActive) {
       animationFrameRef.current = requestAnimationFrame(predictWebcam);
     }
-  }, [isCameraActive, onCommand]);
+  }, [isCameraActive]);
 
   useEffect(() => {
     if (isCameraActive) {
@@ -128,8 +177,17 @@ export function useGestureCommands({ onCommand }: UseGestureCommandsProps) {
           return;
         }
 
+        // A higher resolution gives the hand-landmark model more detail to
+        // work with, which noticeably improves detection reliability when
+        // presenting from typical distances (arm's length or more) instead
+        // of right up against the webcam.
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
+          video: {
+            facingMode: 'user',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 30 },
+          },
         });
 
         if (!videoRef.current) {
@@ -137,7 +195,8 @@ export function useGestureCommands({ onCommand }: UseGestureCommandsProps) {
           videoRef.current.autoplay = true;
           videoRef.current.playsInline = true;
         }
-        
+
+        pendingGestureRef.current = { name: '', count: 0 };
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
           setIsCameraActive(true);

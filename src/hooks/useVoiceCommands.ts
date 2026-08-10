@@ -10,12 +10,35 @@ interface UseVoiceCommandsProps {
   onCommand: (command: VoiceCommand) => void;
 }
 
+// Word-boundary matching prevents false triggers from words that merely
+// contain a command as a substring, e.g. "atrasado" (delayed) contains
+// "atras", and "ultrapassar" (to overtake) contains "passar".
+const NEXT_PATTERN = /\b(próximo|proximo|próxima|proxima|passar|avançar|avancar|frente|segue)\b/i;
+const PREV_PATTERN = /\b(voltar|anterior|trás|atrás|tras|atras)\b/i;
+
+// How long to ignore further matches after a command fires, to avoid a
+// single utterance re-triggering across successive interim results.
+const COMMAND_COOLDOWN_MS = 1500;
+// Delay before restarting recognition after it ends unexpectedly, to avoid
+// a tight restart loop hammering the browser's speech service.
+const RESTART_DELAY_MS = 250;
+
 export function useVoiceCommands({ onCommand }: UseVoiceCommandsProps) {
   const [isListening, setIsListening] = useState(false);
   const [hasSupport, setHasSupport] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const shouldListenRef = useRef(false);
+  const restartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep the latest callback in a ref so the recognition instance below can
+  // be created once and never torn down just because the parent re-renders
+  // with a new onCommand identity (which would otherwise silently drop the
+  // listening session).
+  const onCommandRef = useRef(onCommand);
+  useEffect(() => {
+    onCommandRef.current = onCommand;
+  }, [onCommand]);
 
   useEffect(() => {
     if (!SpeechRecognition) {
@@ -41,30 +64,31 @@ export function useVoiceCommands({ onCommand }: UseVoiceCommandsProps) {
     recognition.onresult = (event: any) => {
       const current = event.resultIndex;
       const result = event.results[current];
-      
-      // Combine alternatives for higher sensitivity
-      let transcript = '';
-      for (let i = 0; i < result.length; i++) {
-        transcript += result[i].transcript.toLowerCase() + ' ';
-      }
-
-      console.log('Voice recognized:', transcript);
 
       const now = Date.now();
-      // 1.5 seconds cooldown to prevent rapid double-firing on interim updates
-      if (now - lastCommandTime < 1500) {
+      // Cooldown prevents rapid double-firing across interim updates of the
+      // same utterance.
+      if (now - lastCommandTime < COMMAND_COOLDOWN_MS) {
         return;
       }
 
-      const isNext = /(próximo|proximo|próxima|proxima|passar|avançar|frente|segue)/i.test(transcript);
-      const isPrev = /(voltar|anterior|trás|atrás|tras|atras)/i.test(transcript);
+      // Alternatives are ranked by the engine's own confidence. Evaluate
+      // each one independently (instead of concatenating them into one
+      // string) so a stray word in a low-confidence alternative can't bias
+      // the match toward NEXT just because it's checked first.
+      let command: VoiceCommand = null;
+      for (let i = 0; i < result.length && !command; i++) {
+        const transcript = result[i].transcript.toLowerCase();
+        if (NEXT_PATTERN.test(transcript)) {
+          command = 'NEXT';
+        } else if (PREV_PATTERN.test(transcript)) {
+          command = 'PREV';
+        }
+      }
 
-      if (isNext) {
+      if (command) {
         lastCommandTime = now;
-        onCommand('NEXT');
-      } else if (isPrev) {
-        lastCommandTime = now;
-        onCommand('PREV');
+        onCommandRef.current(command);
       }
     };
 
@@ -79,23 +103,33 @@ export function useVoiceCommands({ onCommand }: UseVoiceCommandsProps) {
 
     recognition.onend = () => {
       setIsListening(false);
-      // Restart if we are supposed to be listening
-      if (shouldListenRef.current && recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (err) {
-          console.error('Error restarting recognition', err);
-        }
+      // Restart if we are supposed to be listening. A small delay avoids a
+      // tight restart loop if the engine keeps ending immediately (e.g.
+      // repeated 'no-speech' errors), which could otherwise get throttled
+      // by the browser and leave voice control silently unresponsive.
+      if (shouldListenRef.current) {
+        restartTimeoutRef.current = setTimeout(() => {
+          if (shouldListenRef.current && recognitionRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (err) {
+              console.error('Error restarting recognition', err);
+            }
+          }
+        }, RESTART_DELAY_MS);
       }
     };
 
     return () => {
       shouldListenRef.current = false;
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+      }
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
     };
-  }, [onCommand]);
+  }, []);
 
   const toggleListening = useCallback(() => {
     if (!recognitionRef.current) return;
