@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr' expr:lang='data:blog.locale.language'>
+<head>
+<meta charset='UTF-8'/>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<title><data:blog.pageTitle/></title>
+<b:include data='blog' name='all-head-content'/>
+
+<!-- ===================== AdSense — Auto ads (site-wide) =====================
+     Ativa o Auto ads do Google em TODAS as páginas. Combinado com os blocos
+     manuais definidos abaixo (estratégia híbrida). -->
+<script async='async' crossorigin='anonymous' src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5545124844713333'/>
+
+<!-- ===================== Tipografia — Google Fonts ===================== -->
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='crossorigin' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&amp;family=Source+Sans+3:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap' rel='stylesheet'/>
+
+<b:skin><![CDATA[
+
+:root{
+  --ink:#1b2027;
+  --ink-soft:#5b6270;
+  --paper:#f5f4ef;
+  --surface:#ffffff;
+  --surface-2:#eeece4;
+  --line:#dad6ca;
+  --line-strong:#c7c2b3;
+  --brass:#a4753a;
+  --brass-strong:#8a5f2c;
+  --navy:#1f2f52;
+  --navy-soft:#3c4f7a;
+  --navy-tint:#e8ebf2;
+  --teal:#0b6b64;
+  --teal-soft:#128f80;
+  --teal-tint:#e3f0ed;
+  --shadow: 0 1px 2px rgba(27,32,39,.04), 0 8px 24px -12px rgba(27,32,39,.18);
+  --focus:#a4753a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e9e7df; --ink-soft:#a8a79d; --paper:#14161b; --surface:#1b1e25; --surface-2:#20232a;
+    --line:#2d3038; --line-strong:#3c3f48; --brass:#d6a765; --brass-strong:#e6bb7f;
+    --navy:#8fa3d6; --navy-soft:#b1c0e3; --navy-tint:#1c2436;
+    --teal:#5ec3b6; --teal-soft:#8ad9cd; --teal-tint:#132623;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -10px rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e9e7df; --ink-soft:#a8a79d; --paper:#14161b; --surface:#1b1e25; --surface-2:#20232a;
+  --line:#2d3038; --line-strong:#3c3f48; --brass:#d6a765; --brass-strong:#e6bb7f;
+  --navy:#8fa3d6; --navy-soft:#b1c0e3; --navy-tint:#1c2436;
+  --teal:#5ec3b6; --teal-soft:#8ad9cd; --teal-tint:#132623;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -10px rgba(0,0,0,.55);
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Source Sans 3',ui-sans-serif,system-ui,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;display:block}
+a{color:inherit}
+.container{max-width:1180px;margin-inline:auto;padding-inline:clamp(1.25rem,4vw,2.5rem)}
+h1,h2,h3{font-family:'Fraunces',ui-serif,Georgia,serif;font-weight:600;line-height:1.12;text-wrap:balance;margin:0}
+.eyebrow{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);display:inline-flex;align-items:center;gap:.5em}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.eyebrow.theo{color:var(--navy)}
+.eyebrow.med{color:var(--teal)}
+::selection{background:var(--brass);color:#fff}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+.skip-link{position:absolute;left:-999px;top:0;background:var(--ink);color:var(--paper);padding:.7em 1em;z-index:999;border-radius:0 0 6px 0}
+.skip-link:focus{left:0}
+
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--navy),var(--brass) 50%,var(--teal));z-index:100;width:0%;transition:width .1s linear}
+
+header.site{position:sticky;top:0;z-index:70;background:color-mix(in srgb, var(--paper) 88%, transparent);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid var(--line);transition:box-shadow .25s ease}
+header.site.scrolled{box-shadow:0 6px 18px -14px rgba(0,0,0,.4)}
+.header-row{display:flex;align-items:center;gap:1.25rem;padding-block:.85rem}
+.brandmark{width:2.15rem;height:2.15rem;border:1.5px solid var(--brass);border-radius:5px;display:flex;align-items:center;justify-content:center;flex:none;font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;color:var(--brass-strong);text-decoration:none}
+.brand-text{line-height:1.15;text-decoration:none;color:inherit}
+.brand-text .name{display:block;font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem}
+.brand-text .tagline{display:none;font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:.78rem;color:var(--ink-soft)}
+@media(min-width:640px){.brand-text .tagline{display:block}}
+nav.primary{margin-left:auto;display:flex;align-items:center;gap:1.75rem}
+nav.primary a.navlink{font-size:.92rem;font-weight:600;text-decoration:none;position:relative;padding-block:.3rem;color:var(--ink-soft)}
+nav.primary a.navlink:hover{color:var(--ink)}
+nav.primary a.navlink.theo::after,nav.primary a.navlink.med::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:2px;transform:scaleX(0);transition:transform .2s ease}
+nav.primary a.navlink.theo::after{background:var(--navy)}
+nav.primary a.navlink.med::after{background:var(--teal)}
+nav.primary a.navlink:hover::after{transform:scaleX(1)}
+.nav-tools{display:flex;align-items:center;gap:.6rem}
+.icon-btn{width:2.1rem;height:2.1rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-soft);transition:border-color .15s ease,color .15s ease}
+.icon-btn:hover{border-color:var(--brass);color:var(--brass-strong)}
+.icon-btn svg{width:1.05rem;height:1.05rem}
+.hamburger{display:flex}
+@media(min-width:900px){.hamburger{display:none}}
+@media(max-width:899px){nav.primary{display:none}}
+.search-panel{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.search-panel.open{max-height:80px}
+.search-panel .container{padding-block:.9rem}
+.search-box{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;max-width:420px}
+.search-box input{flex:1;border:0;padding:.6em .8em;font:inherit;background:transparent;color:var(--ink);min-width:0}
+.search-box input:focus{outline:0}
+.search-box button{border:0;background:var(--surface-2);padding:0 .8em;cursor:pointer;color:var(--ink-soft)}
+.mobile-panel{display:none;flex-direction:column;padding-block:.5rem 1rem;border-top:1px solid var(--line)}
+.mobile-panel.open{display:flex}
+.mobile-panel a{padding:.6rem 0;text-decoration:none;font-weight:600;color:var(--ink)}
+@media(min-width:900px){.mobile-panel{display:none !important}}
+
+.ad-band{border-block:1px solid var(--line);background:var(--surface)}
+.ad-band .inner{padding-block:2.1rem;text-align:center}
+.ad-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:.85rem}
+.ad-slot{margin-inline:auto;min-height:90px;max-width:728px}
+ins.adsbygoogle{display:block}
+
+.content-shell{padding-block:0}
+.content-primary{min-width:0}
+@supports selector(:has(a)){
+  .content-shell:has(.sidebar){display:grid;grid-template-columns:1fr 300px;gap:3rem;align-items:start}
+}
+
+.hero{padding-block:clamp(2.5rem,6vw,4.5rem)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,5vw,4rem);align-items:center}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr}}
+.hero-eyebrow{margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,4vw,2.9rem);margin-bottom:1rem}
+.hero .standfirst{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:1.15rem;color:var(--ink-soft);max-width:34em;margin-bottom:1.4rem}
+.hero-meta{display:flex;gap:1.25rem;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--ink-soft);margin-bottom:1.6rem}
+.hero-meta b{color:var(--ink);font-weight:600}
+.cta{display:inline-flex;align-items:center;gap:.5em;font-weight:600;text-decoration:none;color:var(--ink);border-bottom:2px solid var(--brass);padding-bottom:.15em}
+.cta:hover{color:var(--brass-strong)}
+.hero-plate{aspect-ratio:1/1;border-radius:10px;position:relative;overflow:hidden;background:linear-gradient(155deg,var(--navy) 0%, var(--navy) 46%, var(--teal) 54%, var(--teal) 100%);box-shadow:var(--shadow)}
+.hero-plate svg{position:absolute;inset:0;width:100%;height:100%}
+.hero-plate img{width:100%;height:100%;object-fit:cover;position:relative;z-index:1}
+
+.spine-section{padding-block:clamp(2.5rem,5vw,4rem)}
+.spine-grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 clamp(1.75rem,4vw,3.5rem)}
+@media(max-width:860px){.spine-grid{grid-template-columns:1fr}}
+.spine-rule{background:var(--line)}
+@media(max-width:860px){.spine-rule{display:none}}
+@media(max-width:860px){.theme-col.medicina{margin-top:3rem;padding-top:3rem;border-top:1px solid var(--line)}}
+.theme-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap}
+.theme-head h2{font-size:1.55rem}
+.theme-col.teologia h2{color:var(--navy)}
+.theme-col.medicina h2{color:var(--teal)}
+.see-all{font-family:'JetBrains Mono',monospace;font-size:.74rem;text-decoration:none;color:var(--ink-soft);white-space:nowrap}
+.see-all:hover{color:var(--brass-strong)}
+.ledger{list-style:none;margin:0;padding:0}
+.ledger li{border-top:1px solid var(--line)}
+.ledger li:last-child{border-bottom:1px solid var(--line)}
+.ledger a{display:grid;grid-template-columns:4.4rem 1fr;gap:1.1rem;padding-block:1.1rem;text-decoration:none;color:inherit}
+.ledger time{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);padding-top:.2rem}
+.ledger h3{font-size:1.03rem;font-weight:600;margin-bottom:.3rem;transition:color .15s ease}
+.ledger a:hover h3{color:var(--brass-strong)}
+.ledger p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.5}
+.tag{display:inline-block;margin-top:.5rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;padding:.2em .55em;border-radius:3px}
+.tag-theo{background:var(--navy-tint);color:var(--navy)}
+.tag-med{background:var(--teal-tint);color:var(--teal)}
+.ledger .empty,.ledger .loading{padding-block:1.4rem;color:var(--ink-soft);font-size:.9rem;border-top:1px solid var(--line)}
+
+.archive-head{padding-block:2rem 1rem}
+.archive-head h1{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+
+footer.site{border-top:1px solid var(--line);margin-top:2rem}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2.5rem;padding-block:3rem}
+@media(max-width:760px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.footer-grid{grid-template-columns:1fr}}
+.footer-grid h4{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 1rem}
+.footer-grid p{margin:0;color:var(--ink-soft);font-size:.92rem}
+.footer-grid ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+.footer-grid a{text-decoration:none;font-size:.92rem;color:var(--ink)}
+.footer-grid a:hover{color:var(--brass-strong)}
+.bottom-bar{border-top:1px solid var(--line);padding-block:1.1rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft)}
+.bottom-bar a{text-decoration:none;color:inherit}
+
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);padding-block:1.1rem 0}
+.breadcrumb a{text-decoration:none;color:var(--ink-soft)}
+.breadcrumb a:hover{color:var(--brass-strong)}
+.article-head{padding-block:1.5rem}
+.article-head h1{font-size:clamp(1.8rem,3.6vw,2.55rem);margin-bottom:1.1rem}
+.article-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;font-size:.85rem;color:var(--ink-soft)}
+.avatar{width:2.1rem;height:2.1rem;border-radius:50%;background:linear-gradient(155deg,var(--navy),var(--teal));flex:none;object-fit:cover}
+.article-meta b{color:var(--ink)}
+.article-meta .sep{color:var(--line-strong)}
+.article-figure{aspect-ratio:16/8;border-radius:8px;overflow:hidden;margin-block:1.5rem 2rem;background:var(--surface-2)}
+.article-figure img{width:100%;height:100%;object-fit:cover}
+.article-body{font-size:1.07rem;line-height:1.85;max-width:66ch}
+.article-body p{margin:0 0 1.35rem}
+.article-body h2,.article-body h3{margin:2.2rem 0 1rem}
+.article-body h2{font-size:1.4rem}
+.article-body img{border-radius:8px;margin-block:1.5rem;max-width:100%;height:auto}
+.article-body blockquote{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:1.3rem;line-height:1.5;color:var(--ink);margin:2rem 0;padding-left:1.4rem;border-left:3px solid var(--brass)}
+.article-body a{color:var(--brass-strong);text-decoration-color:var(--line-strong)}
+.tags-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:2rem 0}
+.chip{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:.35em .75em;border:1px solid var(--line);border-radius:999px;color:var(--ink-soft);text-decoration:none}
+.chip:hover{border-color:var(--brass);color:var(--brass-strong)}
+.share-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:1.5rem 0 2.5rem;padding-block:1.5rem;border-block:1px solid var(--line)}
+.share-row a{width:2.3rem;height:2.3rem;border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);text-decoration:none}
+.share-row a:hover{border-color:var(--brass);color:var(--brass-strong)}
+.share-row svg{width:1.05rem;height:1.05rem}
+.author-box{display:flex;gap:1rem;padding:1.5rem;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:2.5rem}
+.author-box .avatar{width:3rem;height:3rem}
+.author-box h4{margin:0 0 .3rem;font-family:'Fraunces',serif;font-size:1.05rem}
+.author-box p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.55}
+.related-heading{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:2.5rem 0 1rem}
+
+.sidebar{display:flex;flex-direction:column;gap:2rem}
+.side-card{border:1px solid var(--line);border-radius:8px;padding:1.25rem;background:var(--surface);margin-bottom:1.75rem}
+.side-card:last-child{margin-bottom:0}
+.side-card h4{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 1rem}
+.topics-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+.topics-list a{display:flex;justify-content:space-between;text-decoration:none;color:var(--ink);font-size:.92rem}
+.topics-list a:hover{color:var(--brass-strong)}
+.popular-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.9rem}
+.popular-list li{display:grid;grid-template-columns:1.6rem 1fr;gap:.7rem;font-size:.88rem}
+.popular-list .num{font-family:'Fraunces',serif;font-weight:600;color:var(--line-strong);font-size:1.1rem}
+.popular-list a{text-decoration:none;color:var(--ink)}
+.popular-list a:hover{color:var(--brass-strong)}
+
+.comments-wrap{margin-top:1rem}
+.comments-wrap h4{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 1rem}
+
+.top-btn{position:fixed;right:1.25rem;bottom:1.25rem;width:2.6rem;height:2.6rem;border-radius:50%;background:var(--ink);color:var(--paper);border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;box-shadow:var(--shadow);z-index:60}
+.top-btn.show{opacity:1;pointer-events:auto;transform:none}
+.top-btn svg{width:1.1rem;height:1.1rem}
+
+]]></b:skin>
+</head>
+<body>
+<a class='skip-link' href='#main-content'>Pular para o conteúdo</a>
+<div class='progress' id='progress'/>
+
+<header class='site' id='siteHeader'>
+  <div class='container header-row'>
+    <a class='brandmark' expr:href='data:blog.homepageUrl'>RN</a>
+    <a class='brand-text' expr:href='data:blog.homepageUrl'>
+      <b:section id='header' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Header1' locked='true' title='Rodrigo Niskier' type='Header' version='2'>
+          <b:includable id='main'>
+            <span class='name'><data:title/></span>
+            <b:if cond='data:description'><span class='tagline'><data:description/></span></b:if>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </a>
+    <nav class='primary' aria-label='Navegação principal'>
+      <a class='navlink' expr:href='data:blog.homepageUrl'>Início</a>
+      <a class="navlink theo" expr:href="data:blog.homepageUrl + &#39;search/label/Teologia%20Reformada&#39;">Teologia Reformada</a>
+      <a class="navlink med" expr:href="data:blog.homepageUrl + &#39;search/label/Medicina%20e%20Sa%C3%BAde&#39;">Medicina e Saúde</a>
+      <b:section id='pages' showaddelement='no'>
+        <b:widget id='PageList1' locked='false' title='Páginas' type='PageList' version='2'>
+          <b:includable id='main'>
+            <b:loop values='data:links' var='link'>
+              <a class='navlink' expr:href='data:link.href'><data:link.title/></a>
+            </b:loop>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </nav>
+    <div class='nav-tools'>
+      <button aria-controls='searchPanel' aria-label='Buscar' class='icon-btn' id='searchToggle' type='button'>
+        <svg fill='none' stroke='currentColor' stroke-width='1.8' viewBox='0 0 24 24'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>
+      </button>
+      <button aria-label='Alternar tema claro/escuro' class='icon-btn' id='themeToggle' type='button'>
+        <svg fill='none' stroke='currentColor' stroke-width='1.8' viewBox='0 0 24 24'><circle cx='12' cy='12' r='4'/><path d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/></svg>
+      </button>
+      <button aria-controls='mobilePanel' aria-label='Abrir menu' class='icon-btn hamburger' id='menuToggle' type='button'>
+        <svg fill='none' stroke='currentColor' stroke-width='1.8' viewBox='0 0 24 24'><path d='M3 6h18M3 12h18M3 18h18'/></svg>
+      </button>
+    </div>
+  </div>
+  <div class='search-panel' id='searchPanel'>
+    <div class='container'>
+      <form class='search-box' expr:action='data:blog.homepageUrl + &quot;search&quot;' method='get'>
+        <input aria-label='Termo de busca' name='q' placeholder='Buscar artigos…' type='text'/>
+        <button aria-label='Buscar' type='submit'>
+          <svg fill='none' height='16' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='16'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+  <nav class='mobile-panel' id='mobilePanel'>
+    <div class='container' style='display:flex;flex-direction:column'>
+      <a expr:href='data:blog.homepageUrl'>Início</a>
+      <a expr:href="data:blog.homepageUrl + &#39;search/label/Teologia%20Reformada&#39;">Teologia Reformada</a>
+      <a expr:href="data:blog.homepageUrl + &#39;search/label/Medicina%20e%20Sa%C3%BAde&#39;">Medicina e Saúde</a>
+    </div>
+  </nav>
+</header>
+
+<main id='main-content'>
+  <div class='container content-shell'>
+    <div class='content-primary'>
+      <b:section id='main' showaddelement='no'>
+      <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2'>
+
+      <b:includable id='main' var='top'>
+        <b:if cond='data:blog.pageType == &quot;item&quot;'>
+          <b:loop values='data:posts' var='post'>
+            <b:include data='post' name='post'/>
+          </b:loop>
+        <b:else/>
+          <b:if cond='data:blog.url == data:blog.homepageUrl'>
+            <b:loop values='data:posts' var='post'>
+              <b:if cond='data:post.isFirstPost'>
+                <section class='hero'>
+                  <div class='hero-grid'>
+                    <div>
+                      <span class='eyebrow hero-eyebrow'><span class='dot'/>ARTIGO EM DESTAQUE<b:loop values='data:post.labels' var='label'><b:if cond="data:label.name == &#39;Teologia Reformada&#39; or data:label.name == &#39;Medicina e Saúde&#39;"> · <data:label.name/></b:if></b:loop></span>
+                      <h1><a expr:href='data:post.url' style='text-decoration:none;color:inherit'><data:post.title/></a></h1>
+                      <p class='standfirst'><data:post.snippet/></p>
+                      <div class='hero-meta'>
+                        <span><b><data:post.author/></b></span>
+                        <span class='sep'>·</span>
+                        <span><data:post.timestamp/></span>
+                      </div>
+                      <a class='cta' expr:href='data:post.url'>Ler o artigo completo →</a>
+                    </div>
+                    <a class='hero-plate' expr:href='data:post.url'>
+                      <b:if cond='data:post.featuredImage'>
+                        <img expr:alt='data:post.title' expr:src='data:post.featuredImage'/>
+                      <b:else/>
+                        <svg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'>
+                          <circle cx='200' cy='200' fill='none' r='150' stroke='rgba(255,255,255,.35)' stroke-width='1'/>
+                          <circle cx='200' cy='200' fill='none' r='120' stroke='rgba(255,255,255,.22)' stroke-width='1'/>
+                          <path d='M120 165 C150 140,182 140,200 160 C218 140,250 140,280 165 L280 245 C250 222,218 222,200 245 C182 222,150 222,120 245 Z' fill='none' stroke='rgba(255,255,255,.85)' stroke-width='2.2'/>
+                          <line stroke='rgba(255,255,255,.55)' stroke-width='1.4' x1='200' x2='200' y1='160' y2='245'/>
+                          <polyline fill='none' points='70,290 120,290 140,255 160,320 180,270 200,290 330,290' stroke='rgba(255,255,255,.9)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4'/>
+                        </svg>
+                      </b:if>
+                    </a>
+                  </div>
+                </section>
+              </b:if>
+            </b:loop>
+
+            <div class='ad-band'>
+              <div class='inner'>
+                <span class='ad-label'>Publicidade</span>
+                <ins class='adsbygoogle ad-slot' data-ad-client='ca-pub-5545124844713333' data-ad-format='auto' data-ad-slot='SUBSTITUA_PELO_SLOT_TOPO' data-full-width-responsive='true' style='display:block'/>
+                <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+              </div>
+            </div>
+
+            <section class='spine-section'>
+              <div class='spine-grid'>
+                <div class='theme-col teologia'>
+                  <div class='theme-head'>
+                    <div>
+                      <span class='eyebrow theo'><span class='dot'/>TEOLOGIA REFORMADA</span>
+                      <h2>Doutrina examinada com rigor</h2>
+                    </div>
+                    <a class="see-all" expr:href="data:blog.homepageUrl + &#39;search/label/Teologia%20Reformada&#39;">Ver todos →</a>
+                  </div>
+                  <ul class='ledger' id='grid-teologia'><li class='loading'>Carregando artigos…</li></ul>
+                </div>
+                <div class='spine-rule' role='presentation'/>
+                <div class='theme-col medicina'>
+                  <div class='theme-head'>
+                    <div>
+                      <span class='eyebrow med'><span class='dot'/>MEDICINA E SAÚDE</span>
+                      <h2>Cuidado com base em evidência</h2>
+                    </div>
+                    <a class="see-all" expr:href="data:blog.homepageUrl + &#39;search/label/Medicina%20e%20Sa%C3%BAde&#39;">Ver todos →</a>
+                  </div>
+                  <ul class='ledger' id='grid-medicina'><li class='loading'>Carregando artigos…</li></ul>
+                </div>
+              </div>
+            </section>
+
+            <div class='ad-band'>
+              <div class='inner'>
+                <span class='ad-label'>Publicidade</span>
+                <ins class='adsbygoogle ad-slot' data-ad-client='ca-pub-5545124844713333' data-ad-format='auto' data-ad-slot='SUBSTITUA_PELO_SLOT_RODAPE' data-full-width-responsive='true' style='display:block'/>
+                <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+              </div>
+            </div>
+
+          <b:else/>
+            <div class='archive-head'>
+              <b:if cond='data:blog.searchLabel'>
+                <span class='eyebrow'>TEMA</span>
+                <h1><data:blog.searchLabel/></h1>
+              </b:if>
+              <b:if cond='data:blog.searchQuery and not data:blog.searchLabel'>
+                <h1>Resultados para "<data:blog.searchQuery/>"</h1>
+              </b:if>
+              <b:if cond='not data:blog.searchLabel and not data:blog.searchQuery'>
+                <h1>Arquivo</h1>
+              </b:if>
+            </div>
+
+            <div class='ad-band' style='margin-bottom:2rem'>
+              <div class='inner'>
+                <span class='ad-label'>Publicidade</span>
+                <ins class='adsbygoogle ad-slot' data-ad-client='ca-pub-5545124844713333' data-ad-format='auto' data-ad-slot='SUBSTITUA_PELO_SLOT_TOPO' data-full-width-responsive='true' style='display:block'/>
+                <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+              </div>
+            </div>
+
+            <ul class='ledger'>
+              <b:loop values='data:posts' var='post'>
+                <b:include data='post' name='postCard'/>
+              </b:loop>
+            </ul>
+
+            <b:include name='nextprev'/>
+          </b:if>
+        </b:if>
+      </b:includable>
+
+      <b:includable id='postCard' var='post'>
+        <li>
+          <a expr:href='data:post.url'>
+            <time><data:post.timestamp/></time>
+            <div>
+              <h3><data:post.title/></h3>
+              <p><data:post.snippet/></p>
+              <b:loop values='data:post.labels' var='label'>
+                <b:if cond="data:label.name == &#39;Teologia Reformada&#39;"><span class='tag tag-theo'><data:label.name/></span></b:if>
+                <b:if cond="data:label.name == &#39;Medicina e Saúde&#39;"><span class='tag tag-med'><data:label.name/></span></b:if>
+              </b:loop>
+            </div>
+          </a>
+        </li>
+      </b:includable>
+
+      <b:includable id='post' var='post'>
+        <nav class='breadcrumb' aria-label='Trilha'>
+          <a expr:href='data:blog.homepageUrl'>Início</a>
+          <b:loop values='data:post.labels' var='label'>
+            <b:if cond="data:label.name == &#39;Teologia Reformada&#39; or data:label.name == &#39;Medicina e Saúde&#39;"> / <a expr:href='data:label.url'><data:label.name/></a></b:if>
+          </b:loop>
+           / <data:post.title/>
+        </nav>
+
+        <article>
+          <header class='article-head'>
+            <b:loop values='data:post.labels' var='label'>
+              <b:if cond="data:label.name == &#39;Teologia Reformada&#39;"><span class='tag tag-theo'><data:label.name/></span></b:if>
+              <b:if cond="data:label.name == &#39;Medicina e Saúde&#39;"><span class='tag tag-med'><data:label.name/></span></b:if>
+            </b:loop>
+            <h1><data:post.title/></h1>
+            <div class='article-meta'>
+              <b:if cond='data:post.authorPhoto.image'>
+                <img class='avatar' expr:alt='data:post.author' expr:src='data:post.authorPhoto.image'/>
+              <b:else/>
+                <span class='avatar' role='presentation'/>
+              </b:if>
+              <span><b><data:post.author/></b></span>
+              <span class='sep'>·</span>
+              <span><data:post.timestamp/></span>
+              <span class='sep'>·</span>
+              <span class='read-time'>leitura de alguns minutos</span>
+            </div>
+          </header>
+
+          <b:if cond='data:post.featuredImage'>
+            <figure class='article-figure'>
+              <img expr:alt='data:post.title' expr:src='data:post.featuredImage'/>
+            </figure>
+          </b:if>
+
+          <div class='ad-band' style='margin-bottom:2rem'>
+            <div class='inner'>
+              <span class='ad-label'>Publicidade</span>
+              <ins class='adsbygoogle ad-slot' data-ad-client='ca-pub-5545124844713333' data-ad-format='fluid' data-ad-layout='in-article' data-ad-slot='SUBSTITUA_PELO_SLOT_ARTIGO' style='display:block'/>
+              <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+            </div>
+          </div>
+
+          <div class='article-body post-body'>
+            <data:post.body/>
+          </div>
+
+          <div class='tags-row'>
+            <b:loop values='data:post.labels' var='label'>
+              <a class='chip' expr:href='data:label.url'>#<data:label.name/></a>
+            </b:loop>
+          </div>
+
+          <div class='share-row' aria-label='Compartilhar'>
+            <a expr:href='"https://api.whatsapp.com/send?text=" + data:post.title + " %0A" + data:post.url' rel='noopener' target='_blank' title='WhatsApp'>
+              <svg fill='currentColor' viewBox='0 0 24 24'><path d='M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.7 14.2c-.2.6-1.4 1.2-1.9 1.3-.5.1-1.1.2-3.5-.8-3-1.2-4.9-4.2-5-4.4-.1-.2-1.2-1.6-1.2-3s.8-2.1 1-2.4c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.4.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.7 1.7.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1l1.7.8c.2.1.4.2.5.3.1.2.1.9-.1 1.4z'/></svg>
+            </a>
+            <a expr:href='"https://t.me/share/url?url=" + data:post.url + "&amp;text=" + data:post.title' rel='noopener' target='_blank' title='Telegram'>
+              <svg fill='currentColor' viewBox='0 0 24 24'><path d='M21.9 4.3 18.7 20c-.2 1-.9 1.2-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.6 13 1.9 11.5c-1-.3-1-1 .2-1.5L20.6 3c.8-.3 1.6.2 1.3 1.3z'/></svg>
+            </a>
+            <a expr:href='"https://twitter.com/intent/tweet?text=" + data:post.title + "&amp;url=" + data:post.url' rel='noopener' target='_blank' title='X (Twitter)'>
+              <svg fill='currentColor' viewBox='0 0 24 24'><path d='M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-6.6L4.3 22H1.2l8.2-9.3L1 2h7l4.9 6.1zM17.6 20h1.9L7.5 4H5.4z'/></svg>
+            </a>
+            <a expr:href='"mailto:?subject=" + data:post.title + "&amp;body=" + data:post.url' title='E-mail'>
+              <svg fill='none' stroke='currentColor' stroke-width='1.8' viewBox='0 0 24 24'><rect height='14' rx='2' width='18' x='3' y='5'/><path d='m3 7 9 6 9-6'/></svg>
+            </a>
+          </div>
+
+          <div class='author-box'>
+            <span class='avatar' role='presentation'/>
+            <div>
+              <h4><data:post.author/></h4>
+              <p>Escreve sobre teologia reformada e medicina, com o mesmo rigor de exame — o texto de um lado, o corpo do outro.</p>
+            </div>
+          </div>
+
+          <div class='ad-band' style='margin-bottom:2.5rem'>
+            <div class='inner'>
+              <span class='ad-label'>Publicidade</span>
+              <ins class='adsbygoogle ad-slot' data-ad-client='ca-pub-5545124844713333' data-ad-format='auto' data-ad-slot='SUBSTITUA_PELO_SLOT_RODAPE' data-full-width-responsive='true' style='display:block'/>
+              <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+            </div>
+          </div>
+
+          <p class='related-heading'>Artigos relacionados</p>
+          <ul class='ledger' id='grid-related'><li class='loading'>Carregando…</li></ul>
+
+          <b:if cond='data:post.allowComments'>
+            <div class='comments-wrap'>
+              <h4>Comentários</h4>
+              <b:include data='post' name='comments'/>
+            </div>
+          </b:if>
+
+          <script type='text/javascript'>window.__CURRENT_POST_ID = '<data:post.id/>';</script>
+        </article>
+      </b:includable>
+
+      </b:widget>
+      </b:section>
+    </div>
+
+    <b:if cond='data:blog.url != data:blog.homepageUrl'>
+      <aside class='sidebar'>
+        <b:section id='sidebar-tools' showaddelement='no'>
+          <b:widget id='HTML2' locked='false' title='Barra lateral' type='HTML' version='2'>
+            <b:includable id='main'>
+              <div class='side-card'>
+                <h4>Buscar</h4>
+                <form class='search-box' expr:action='data:blog.homepageUrl + &quot;search&quot;' method='get'>
+                  <input aria-label='Termo de busca' name='q' placeholder='Buscar artigos…' type='text'/>
+                  <button aria-label='Buscar' type='submit'>
+                    <svg fill='none' height='16' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24' width='16'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>
+                  </button>
+                </form>
+              </div>
+              <div class='side-card'>
+                <h4>Temas</h4>
+                <ul class='topics-list'>
+                  <li><a expr:href="data:blog.homepageUrl + &#39;search/label/Teologia%20Reformada&#39;">Teologia Reformada</a></li>
+                  <li><a expr:href="data:blog.homepageUrl + &#39;search/label/Medicina%20e%20Sa%C3%BAde&#39;">Medicina e Saúde</a></li>
+                </ul>
+              </div>
+              <div class='side-card'>
+                <h4>Publicidade</h4>
+                <ins class='adsbygoogle' data-ad-client='ca-pub-5545124844713333' data-ad-format='auto' data-ad-slot='SUBSTITUA_PELO_SLOT_LATERAL' data-full-width-responsive='true' style='display:block;min-height:250px'/>
+                <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+              </div>
+            </b:includable>
+          </b:widget>
+        </b:section>
+        <b:section id='sidebar-popular' showaddelement='no'>
+          <b:widget id='PopularPosts1' locked='false' title='Mais lidos' type='PopularPosts' version='2'>
+            <b:includable id='main'>
+              <div class='side-card'>
+                <h4>Mais lidos</h4>
+                <ul class='popular-list'>
+                  <b:loop index='num' values='data:posts' var='post'>
+                    <li>
+                      <span class='num'><data:num/></span>
+                      <a expr:href='data:post.href'><data:post.title/></a>
+                    </li>
+                  </b:loop>
+                </ul>
+              </div>
+            </b:includable>
+          </b:widget>
+        </b:section>
+      </aside>
+    </b:if>
+  </div>
+</main>
+
+<b:section id='footer' showaddelement='no'>
+<b:widget id='HTML1' locked='false' title='Rodapé' type='HTML' version='2'>
+<b:includable id='main'>
+<footer class='site'>
+  <div class='container footer-grid'>
+    <div>
+      <h4>Sobre</h4>
+      <p>Rodrigo Niskier escreve sobre teologia reformada e medicina — duas disciplinas de exame cuidadoso, uma da Escritura, outra do corpo.</p>
+    </div>
+    <div>
+      <h4>Temas</h4>
+      <ul>
+        <li><a expr:href="data:blog.homepageUrl + &#39;search/label/Teologia%20Reformada&#39;">Teologia Reformada</a></li>
+        <li><a expr:href="data:blog.homepageUrl + &#39;search/label/Medicina%20e%20Sa%C3%BAde&#39;">Medicina e Saúde</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Navegar</h4>
+      <ul>
+        <li><a expr:href='data:blog.homepageUrl'>Início</a></li>
+        <li><a expr:href='data:blog.homepageUrl + &quot;search&quot;'>Arquivo</a></li>
+        <li><a expr:href='data:blog.homepageUrl + &quot;feeds/posts/default&quot;'>RSS</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <ul>
+        <li><a href='mailto:contato@example.com'>Enviar e-mail</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class='ad-band'>
+    <div class='container inner'>
+      <span class='ad-label'>Publicidade</span>
+      <ins class='adsbygoogle ad-slot' data-ad-client='ca-pub-5545124844713333' data-ad-format='auto' data-ad-slot='SUBSTITUA_PELO_SLOT_RODAPE' data-full-width-responsive='true' style='display:block'/>
+      <script><![CDATA[(adsbygoogle = window.adsbygoogle || []).push({});]]></script>
+    </div>
+  </div>
+  <div class='container bottom-bar'>
+    <span>© <data:blog.pageTitle/></span>
+    <span>Publicado com Blogger</span>
+  </div>
+</footer>
+</b:includable>
+</b:widget>
+</b:section>
+
+<button aria-label='Voltar ao topo' class='top-btn' id='topBtn' type='button'>
+  <svg fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M12 19V5M5 12l7-7 7 7'/></svg>
+</button>
+
+<script type='text/javascript'><![CDATA[
+(function(){
+  var header = document.getElementById('siteHeader');
+  var topBtn = document.getElementById('topBtn');
+  var progress = document.getElementById('progress');
+
+  function updateProgress(){
+    var h = document.documentElement;
+    var scrollTop = h.scrollTop || document.body.scrollTop;
+    var scrollHeight = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+    var pct = scrollHeight > 0 ? (scrollTop/scrollHeight)*100 : 0;
+    if(progress){ progress.style.width = pct + '%'; }
+    if(header){
+      if(scrollTop > 40){ header.classList.add('scrolled'); } else { header.classList.remove('scrolled'); }
+    }
+    if(topBtn){
+      if(scrollTop > 500){ topBtn.classList.add('show'); } else { topBtn.classList.remove('show'); }
+    }
+  }
+  document.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+  if(topBtn){ topBtn.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); }); }
+
+  var themeToggle = document.getElementById('themeToggle');
+  var root = document.documentElement;
+  var savedTheme = null;
+  try{ savedTheme = localStorage.getItem('rn-theme'); }catch(e){}
+  if(savedTheme){ root.setAttribute('data-theme', savedTheme); }
+  if(themeToggle){
+    themeToggle.addEventListener('click', function(){
+      var current = root.getAttribute('data-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var effectiveIsDark = current ? current === 'dark' : prefersDark;
+      var next = effectiveIsDark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try{ localStorage.setItem('rn-theme', next); }catch(e){}
+    });
+  }
+
+  var searchToggle = document.getElementById('searchToggle');
+  var searchPanel = document.getElementById('searchPanel');
+  if(searchToggle && searchPanel){
+    searchToggle.addEventListener('click', function(){
+      searchPanel.classList.toggle('open');
+      if(searchPanel.classList.contains('open')){
+        var input = searchPanel.querySelector('input');
+        if(input){ input.focus(); }
+      }
+    });
+  }
+
+  var menuToggle = document.getElementById('menuToggle');
+  var mobilePanel = document.getElementById('mobilePanel');
+  if(menuToggle && mobilePanel){
+    menuToggle.addEventListener('click', function(){ mobilePanel.classList.toggle('open'); });
+  }
+
+  function stripHtml(html){
+    var d = document.createElement('div');
+    d.innerHTML = html;
+    return d.textContent || d.innerText || '';
+  }
+  function truncate(s, n){
+    s = s.trim();
+    if(s.length <= n){ return s; }
+    return s.slice(0, n).replace(/\s+\S*$/, '') + '…';
+  }
+  function formatDate(iso){
+    try{
+      var d = new Date(iso);
+      var s = new Intl.DateTimeFormat('pt-BR', {day:'2-digit', month:'short'}).format(d);
+      return s.toUpperCase().replace('.', '');
+    }catch(e){ return ''; }
+  }
+  function entryLink(entry){
+    for(var i=0;i<entry.link.length;i++){
+      if(entry.link[i].rel === 'alternate'){ return entry.link[i].href; }
+    }
+    return '#';
+  }
+  function renderLedger(container, entries, excludeId, emptyMsg){
+    var items = [];
+    for(var i=0;i<entries.length;i++){
+      var e = entries[i];
+      if(excludeId && e.id.$t.indexOf(excludeId) !== -1){ continue; }
+      var summary = e.summary ? stripHtml(e.summary.$t) : '';
+      items.push(
+        '<li><a href="' + entryLink(e) + '"><time>' + formatDate(e.published.$t) + '</time><div><h3>' +
+        e.title.$t + '</h3><p>' + truncate(summary, 120) + '</p></div></a></li>'
+      );
+      if(items.length >= 6){ break; }
+    }
+    if(items.length === 0){
+      container.innerHTML = '<li class="empty">' + emptyMsg + '</li>';
+    } else {
+      container.innerHTML = items.join('');
+    }
+  }
+  function loadFeed(label, max, callback){
+    var url = '/feeds/posts/summary/-/' + encodeURIComponent(label) + '?alt=json&max-results=' + max + '&orderby=published';
+    fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      callback((data.feed && data.feed.entry) || []);
+    }).catch(function(){ callback([]); });
+  }
+
+  var gridTeo = document.getElementById('grid-teologia');
+  var gridMed = document.getElementById('grid-medicina');
+  if(gridTeo){
+    loadFeed('Teologia Reformada', 6, function(entries){
+      renderLedger(gridTeo, entries, null, 'Em breve, os primeiros artigos deste tema.');
+    });
+  }
+  if(gridMed){
+    loadFeed('Medicina e Saúde', 6, function(entries){
+      renderLedger(gridMed, entries, null, 'Em breve, os primeiros artigos deste tema.');
+    });
+  }
+
+  var gridRelated = document.getElementById('grid-related');
+  if(gridRelated){
+    var labelChips = document.querySelectorAll('.tags-row .chip');
+    var firstLabel = labelChips.length ? labelChips[0].textContent.replace('#','') : null;
+    var currentId = window.__CURRENT_POST_ID || '';
+    if(firstLabel){
+      loadFeed(firstLabel, 5, function(entries){
+        renderLedger(gridRelated, entries, currentId, 'Sem artigos relacionados por enquanto.');
+      });
+    } else {
+      gridRelated.innerHTML = '';
+    }
+  }
+
+  var postBody = document.querySelector('.post-body');
+  if(postBody){
+    var words = (postBody.innerText || postBody.textContent || '').trim().split(/\s+/).length;
+    var mins = Math.max(1, Math.round(words/200));
+    var rt = document.querySelector('.read-time');
+    if(rt){ rt.textContent = mins + ' min de leitura'; }
+
+    var paras = postBody.querySelectorAll('p');
+    if(paras.length >= 5){
+      var wrap = document.createElement('div');
+      wrap.className = 'ad-band';
+      wrap.style.margin = '2rem 0';
+      wrap.innerHTML =
+        '<div class="inner"><span class="ad-label">Publicidade</span>' +
+        '<ins class="adsbygoogle ad-slot" style="display:block" data-ad-client="ca-pub-5545124844713333" ' +
+        'data-ad-slot="SUBSTITUA_PELO_SLOT_ARTIGO" data-ad-format="fluid" data-ad-layout="in-article"></ins></div>';
+      var mid = Math.floor(paras.length/2);
+      paras[mid].parentNode.insertBefore(wrap, paras[mid]);
+      try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+    }
+  }
+})();
+]]></script>
+</body>
+</html>
