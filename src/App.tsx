@@ -14,13 +14,23 @@ export default function App() {
   
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Keep numPages in a ref so handleCommand can stay referentially stable.
+  // The voice/gesture hooks re-create their recognizer session whenever this
+  // callback's identity changes, which would otherwise interrupt an active
+  // listening session every time a PDF finishes loading.
+  const numPagesRef = useRef(numPages);
+  useEffect(() => {
+    numPagesRef.current = numPages;
+  }, [numPages]);
+
   const handleCommand = useCallback((command: VoiceCommand) => {
+    const total = numPagesRef.current;
     if (command === 'NEXT') {
-      setCurrentPage((prev) => (numPages ? Math.min(prev + 1, numPages) : prev + 1));
+      setCurrentPage((prev) => (total ? Math.min(prev + 1, total) : prev + 1));
     } else if (command === 'PREV') {
       setCurrentPage((prev) => Math.max(prev - 1, 1));
     }
-  }, [numPages]);
+  }, []);
 
   const { isListening, hasSupport, toggleListening, error: voiceError } = useVoiceCommands({
     onCommand: handleCommand,
